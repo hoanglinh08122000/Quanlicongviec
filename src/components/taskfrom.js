@@ -4,12 +4,41 @@ class TaskFrom extends Component {
 constructor(props){
     super(props);
     this.state={
+        id:'',
         name : '',
         status : true
     }
 }
 
+componentWillMount(){
 
+  if(this.props.taskEditing){
+    this.setState({
+      id : this.props.taskEditing.id,
+      name : this.props.taskEditing.name,
+      status : this.props.taskEditing.status,
+    });
+   
+  }
+}
+
+componentWillReceiveProps(nextProps){
+    if (nextProps && nextProps.taskEditing) {
+        this.setState({
+            id : nextProps.taskEditing.id,
+            name : nextProps.taskEditing.name,
+            status : nextProps.taskEditing.status,
+
+
+        }) 
+        }else if(!nextProps.taskEditing){
+            this.setState({
+                id:'',
+                name : '',
+                status : true
+            })
+    }
+}
 
 onChange = (event) =>{
     var target = event.target;
@@ -37,12 +66,13 @@ onClear = () =>{
     })
 }
 render() {
-	
+	var {id} = this.state;
+
 	return(
 			<div className="panel panel-success">
                 <div className="panel-heading">
                     <h3 className="panel-title">
-                        Add job
+                        {id !== '' ? 'Update' : 'Add Job'}
                         <span className="fas fa-times right"onClick={this.onCloseFrom} ></span>
                     </h3>
 

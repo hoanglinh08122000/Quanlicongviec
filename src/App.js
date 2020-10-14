@@ -11,7 +11,8 @@ class App extends Component {
         super(props);
         this.state = {
             tasks : [],
-            isDisplayFrom:false
+            isDisplayFrom:false,
+            taskEditing: null
         }
     }
 
@@ -61,37 +62,61 @@ class App extends Component {
     };
 
     onFromAdd = ()=>{
-        this.setState({
-            isDisplayFrom : !this.state.isDisplayFrom
-        })
+        if(this.state.isDisplayFrom && this.state.taskEditing !== null){
+            this.setState({
+                isDisplayFrom:true,
+                taskEditing: null
+            })
+           
+        } else {
+            this.setState({
+                isDisplayFrom : !this.state.isDisplayFrom,
+                taskEditing: null
+            })
+        }
+        
     };
     onCloseFrom = () =>{
         this.setState({
             isDisplayFrom:false
         })
     };
+    showEditing = () =>{
+        this.setState({
+            isDisplayFrom:true
+        })
+    };
     getDataFrom = (data)=>{
         var {tasks}=this.state;
-        data.id = this.randomID();
-        tasks.push(data);
+        if(data.id === ''){
+             data.id = this.randomID();
+            tasks.push(data);
+        }else{
+            var index = this.findIndex(data.id);
+            tasks[index]=data;
+        }
+       
 
         this.setState({
-            tasks:tasks
+            tasks:tasks,
+            taskEditing: null
         });
         localStorage.setItem('tasks', JSON.stringify(tasks)); 
+        this.onCloseFrom();
     };
     onUpdateStatus = (id) =>{
          var {tasks}=this.state;
          var index = this.findIndex(id);// tạo function
          if(index !== -1){
-            tasks.splice(index, 1)
+            tasks[index].status = !tasks[index].status;
             this.setState({
                 tasks:tasks
             })
             localStorage.setItem('tasks', JSON.stringify(tasks)); 
          }
-         this.onCloseFrom();
+        
     };
+   
 
     findIndex=(id)=>{   // tìm kiếm ,kiểm tra xem id có tồn tại hay k
         var {tasks}=this.state;
@@ -103,16 +128,43 @@ class App extends Component {
             }
         });
         return result;
+    };
+
+    onDelete = (id) =>{
+         var {tasks}=this.state;
+         var index = this.findIndex(id);// tạo function
+         if(index !== -1){
+            tasks.splice(index, 1);
+            this.setState({
+                tasks:tasks
+            })
+            localStorage.setItem('tasks', JSON.stringify(tasks)); 
+         }
+         this.onCloseFrom();
+    };
+
+    onUpdate = (id) =>{
+        var {tasks}=this.state;
+        var index = this.findIndex(id);
+        var taskEditing = tasks[index];
+        this.setState({
+            taskEditing : taskEditing
+        });
+
+        this.showEditing();
     }
 
-
-
-
+   
     render() {
             //B1: lấy dữ liệu của tasks
          var tasks = this.state.tasks; // var tasks = this.state.tasks 
          var isDisplayFrom = this.state.isDisplayFrom;
-         var elmDisplayFrom = isDisplayFrom ? <TaskFrom onCloseFrom={this.onCloseFrom} getDataFrom={this.getDataFrom} /> : '';
+         var taskEditing = this.state.taskEditing;
+         var elmDisplayFrom = isDisplayFrom ? <TaskFrom 
+                                                    onCloseFrom={this.onCloseFrom} 
+                                                    getDataFrom={this.getDataFrom} 
+                                                    taskEditing={taskEditing} 
+                                               /> : '';
     return(
         <div className="container-fluid mg-50">
             <h1 id="mid">Quản lí công việc</h1>
@@ -140,7 +192,7 @@ class App extends Component {
                     <Control />
                     
                    {/* B2: gửi dữ liệu qua tasklist*/}
-                    <TaskList tasks = { tasks } onUpdateStatus ={this.onUpdateStatus} onDelete={this.onDelete}/>
+                    <TaskList tasks = { tasks } onUpdateStatus ={this.onUpdateStatus} onDelete={this.onDelete} onUpdate={this.onUpdate} />
                 </div>
                 
                 
