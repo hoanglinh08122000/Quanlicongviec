@@ -43,6 +43,9 @@
 .ml-5{
   margin-left: 5px;
 }
+.right{
+  float: right;
+}
 #abc{
     margin: auto;
     align-content: center;

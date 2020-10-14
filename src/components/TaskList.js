@@ -7,7 +7,13 @@ render() {
     var tasks  = this.props.tasks;// var task = this.props.task
     //B4 : tạo vòng lặp lấy các phần tử + truyền dữ liệu cho task Item ở phần return
     var elm = tasks.map((task, index) => {
-        return <TaskItem key={tasks.id} index={index} task={task} />
+        return  <TaskItem 
+                    key={task.id} 
+                    index={index} 
+                    task={task} 
+                    onUpdateStatus={this.props.onUpdateStatus}  
+                    onDelete={this.props.onDelete}
+                />
     });
 	return(
         
