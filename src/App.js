@@ -7,12 +7,19 @@ import TaskList from './components/TaskList';
 
 class App extends Component {
 
-    constructor(props){
+    constructor(props){ 
         super(props);
         this.state = {
             tasks : [],
             isDisplayFrom:false,
-            taskEditing: null
+            taskEditing: null,
+            filter : {
+                name : '',
+                status: -1
+            },
+            keyword:'',
+            sortBy:'',
+            sortValue:''
         }
     }
 
@@ -152,24 +159,92 @@ class App extends Component {
         });
 
         this.showEditing();
+    };
+    onFilter=(filterName,filterStatus)=>{
+        filterStatus = parseInt(filterStatus,10);
+        this.setState({
+            filter:{
+                name: filterName.toLowerCase(),
+                status: filterStatus
+            }
+            
+        })
+      
+    }
+   
+    onSearch = (keyword) =>{
+        this.setState({
+            keyword:keyword
+        })
+
+    }
+    onSort=(sortBy,sortValue)=>{
+
+        this.setState({
+            sortBy:sortBy,
+            sortValue:sortValue
+        })
+        
     }
 
-   
     render() {
             //B1: lấy dữ liệu của tasks
-         var tasks = this.state.tasks; // var tasks = this.state.tasks 
-         var isDisplayFrom = this.state.isDisplayFrom;
-         var taskEditing = this.state.taskEditing;
-         var elmDisplayFrom = isDisplayFrom ? <TaskFrom 
-                                                    onCloseFrom={this.onCloseFrom} 
-                                                    getDataFrom={this.getDataFrom} 
-                                                    taskEditing={taskEditing} 
-                                               /> : '';
+        var tasks = this.state.tasks; // var tasks = this.state.tasks 
+        var isDisplayFrom = this.state.isDisplayFrom;
+        var taskEditing = this.state.taskEditing;
+        var filter = this.state.filter;
+        var keyword = this.state.keyword;
+        var {sortBy,sortValue}=this.state;
+        
+        if (filter){
+            if(filter.name){
+                tasks = tasks.filter((task)=>{
+                    return task.name.toLowerCase().indexOf(filter.name) !== -1;
+                });
+                    
+                }
+
+            tasks = tasks.filter((task)=>{
+                if(filter.status === -1){
+                    return task;
+                }else {
+                    return task.status===(filter.status === 1 ? true : false);
+                }
+            });
+        }
+        if(keyword){
+            tasks = tasks.filter((task)=>{
+                // if(task.name.toLowerCase()===<task className="index"></task>Of(keyword)){
+                //     return task.name;
+                // }
+                return task.name.toLowerCase().indexOf(keyword) !== -1;
+            });
+                
+        }
+        if(sortBy==='name'){
+            tasks.sort((a,b)=>{
+                if(a.name > b.name) return sortValue;
+                else if(a.name < b.name ) return -sortValue;
+                else return 0;
+            });
+        }else{
+             tasks.sort((a,b)=>{
+                if(a.status > b.status) return sortValue;
+                else if(a.status < b.status ) return -sortValue;
+                else return 0;
+            });
+        }
+        var elmDisplayFrom = isDisplayFrom ? <TaskFrom 
+                                                onCloseFrom={this.onCloseFrom} 
+                                                getDataFrom={this.getDataFrom} 
+                                                taskEditing={taskEditing}
+
+                                           /> : '';
     return(
         <div className="container-fluid mg-50">
             <h1 id="mid">Quản lí công việc</h1>
             <hr/>
-            <div className="row " id="abc">
+            <div className="row" id="abc">
                 <div className="col-xs-3 col-sm-3 col-md-3 col-lg-3">
                    { elmDisplayFrom }
                 </div>
@@ -189,10 +264,21 @@ class App extends Component {
                         </span>
                     </button>
 
-                    <Control />
+                    <Control 
+                        onSearch={this.onSearch} 
+                        onSort={this.onSort}
+                        sortBy={sortBy}
+                        sortValue={sortValue}
+                    />
                     
                    {/* B2: gửi dữ liệu qua tasklist*/}
-                    <TaskList tasks = { tasks } onUpdateStatus ={this.onUpdateStatus} onDelete={this.onDelete} onUpdate={this.onUpdate} />
+                    <TaskList 
+                        tasks = { tasks } 
+                        onUpdateStatus ={this.onUpdateStatus} 
+                        onDelete={this.onDelete}
+                        onUpdate={this.onUpdate} 
+                        onFilter ={this.onFilter} 
+                    />
                 </div>
                 
                 

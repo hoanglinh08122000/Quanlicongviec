@@ -1,20 +1,66 @@
 import React, { Component } from 'react';
 
 class Sort extends Component {
-	
+    constructor(props){
+        super(props);
+        // this.state = {
+        //     sort:{
+        //         by:'name',
+        //         value: 1
+
+        //     }
+        // }
+    }
+componentWillReceiveProps(nextProps){
+    console.log(nextProps);
+}
+onClick=(sortBy,sortValue)=>{
+   
+    // this.setState({
+    //     sort:{
+    //         by : sortBy,
+    //         value: sortValue
+    //     }
+    // });
+    this.props.onSort(sortBy,sortValue);
+   
+}
+
 render() {
+    // var {sort} = this.state;
 	return(
 			<div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
-                <div className="input-group">
-                    <input type="text" className="form-control" placeholder="Nhập từ khóa..." />
-                    <span className="input-group-btn">
-                                <button className="btn btn-primary" type="button">
-                                <span className="fa fa-search mr-5"></span>Tìm
+                <div className="dropdown">
+                    <button className="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Sắp Xếp <span className="fa fa-caret-square-o-down ml-5"></span>
                     </button>
-                    </span>
+                    <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li onClick={ () => this.onClick('name',1)}>
+                            <a 
+                                role="button"
+                            >
+                                <span className="fa fa-sort-alpha-asc pr-5">
+                                    Tên A-Z
+                                    {(this.props.sortBy === 'name' && this.props.sortValue===1) ? '*' :''}
+                                </span>
+                             </a>
+                        </li>
+                        <li onClick={ () => this.onClick('name',-1)}>
+                            <a role="button">
+                                <span className="fa fa-sort-alpha-desc pr-5">
+                                    Tên Z-A
+                                    {(this.props.sortBy === 'name' && this.props.sortValue=== -1) ? '*' :''}
+                                </span>
+                            </a>
+                        </li>
+                        <li role="separator" className="divider"></li>
+                        <li onClick={ () => this.onClick('status', 1)}><a role="button">Trạng Thái Kích Hoạt {(this.props.sortBy === 'status' && this.props.sortValue===1) ? '*' :''}</a></li>
+                        <li onClick={( ) => this.onClick('status',-1)} ><a role="button">Trạng Thái Ẩn {(this.props.sortBy === 'status' && this.props.sortValue === -1) ? '*' :''}</a></li>
+                    </ul>
                 </div>
-            </div>
+            </div>           
         )
 	}
 }
 export default Sort;
+

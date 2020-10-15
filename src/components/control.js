@@ -6,8 +6,9 @@ class Control extends Component {
 render() {
 	return(
         <div className="row mt-15">
-            <Sort />
-            <Search />
+            
+            <Search onSearch={this.props.onSearch} />
+            <Sort onSort={this.props.onSort} sortBy={this.props.sortBy}  sortValue={this.props.sortValue} />
         </div>
 		  
 		)
